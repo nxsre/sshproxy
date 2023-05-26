@@ -1,4 +1,4 @@
-module sshproxy
+module github.com/nxsre/sshproxy
 
 go 1.20
 
