@@ -2,11 +2,12 @@ package sshproxy
 
 import (
 	"context"
-	"errors"
+	//"errors"
 	"net"
 	"net/http"
 	"sync"
 
+	"crypto/tls"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -63,8 +64,14 @@ func (proxy *Proxy) GetClient(key Key) *Client {
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 				return pClient.dial(network, addr)
 			},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return nil, errors.New("not implemented")
+				conn,err:=pClient.dial(network, addr)
+				if err!=nil{
+					return nil,err
+				}
+				return tls.Client(conn,&tls.Config{InsecureSkipVerify: true}),nil
+				//return nil, errors.New("not implemented")
 			},
 		},
 	}
